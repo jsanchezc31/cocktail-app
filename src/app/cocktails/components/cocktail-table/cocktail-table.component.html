@@ -1,0 +1,130 @@
+<div
+  *ngIf="cocktails.length === 0; else table"
+  class="alert alert-warning text-center"
+>
+  Sin resultados
+</div>
+
+<ng-template #table>
+  <p-table
+    #dt
+    [value]="cocktails"
+    [paginator]="true"
+    [rows]="5"
+    [responsiveLayout]="'scroll'"
+    [rowsPerPageOptions]="[5, 10, 25, 50]"
+    [globalFilterFields]="['strDrink', 'strCategory', 'strAlcoholic']"
+  >
+    <!-- Filtro global -->
+    <ng-template pTemplate="caption">
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="onGlobalFilter($event)"
+            placeholder="Buscar..."
+          />
+        </p-iconfield>
+      </div>
+    </ng-template>
+
+    <!-- Cabecera de la tabla -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="idDrink"># Id<p-sortIcon field="idDrink" /></th>
+        <th>Img</th>
+        <th pSortableColumn="strDrink">
+          Nombre<p-sortIcon field="strDrink" />
+        </th>
+        <th pSortableColumn="strCategory">
+          Categoría<p-sortIcon field="strCategory" />
+        </th>
+        <th pSortableColumn="strAlcoholic">
+          Alcoholic<p-sortIcon field="strAlcoholic" />
+        </th>
+        <th>Ingredientes</th>
+        <th pSortableColumn="dateModified">
+          Ult. Actualización<p-sortIcon field="dateModified" />
+        </th>
+      </tr>
+    </ng-template>
+
+    <!-- Cuerpo de la tabla -->
+    <ng-template pTemplate="body" let-cocktail let-index="rowIndex">
+      <tr>
+        <td>
+          <a [routerLink]="['/cocktails/by', cocktail.idDrink]">
+            {{ cocktail.idDrink }}
+          </a>
+        </td>
+        <td>
+          <img
+            [src]="cocktail.strDrinkThumb"
+            [alt]="cocktail.strDrink"
+            style="width: 50px; height: auto"
+          />
+        </td>
+        <td>
+          {{ cocktail.strDrink }}
+        </td>
+        <td>
+          <a
+            style="cursor: pointer; text-decoration: underline; color: blue"
+            (click)="showCocktailsByCategory(cocktail.strCategory)"
+          >
+            {{ cocktail.strCategory }}
+          </a>
+        </td>
+        <td class="text-center">
+          {{ cocktail.strAlcoholic === "Alcoholic" ? "SI" : "NO" }}
+        </td>
+        <td class="text-center">
+          <a
+            (click)="showIngredients(cocktail)"
+            style="cursor: pointer; color: blue; text-decoration: underline"
+          >
+            {{ countIngredients(cocktail) }}
+          </a>
+        </td>
+        <td class="text-center">
+          {{ cocktail.dateModified | date : "dd/MM/yyyy" }}
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <tr>
+        <!-- Ajusta colspan según el número de columnas que uses -->
+        <td colspan="7" style="text-align: right">
+          Cócteles con alcohol: {{ alcoholicCount }} &nbsp;|&nbsp; Cócteles sin
+          alcohol: {{ nonAlcoholicCount }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-template>
+
+<!-- Componente del modal -->
+<app-dialog-ingredients
+  [ingredients]="selectedIngredientsWithMeasures"
+  [visible]="modalVisible"
+  (close)="closeModal()"
+></app-dialog-ingredients>
+
+<app-dialog-category
+  [category]="selectedCategory"
+  [visible]="categoryModalVisible"
+  [cocktails]="selectedCategoryCocktails"
+  (close)="closeCategoryModal()"
+>
+</app-dialog-category>
+
+<div class="row">
+  <div class="col">
+    <shared-loading-spinner *ngIf="isLoading"></shared-loading-spinner>
+  </div>
+</div>
