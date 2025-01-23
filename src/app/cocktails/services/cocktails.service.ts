@@ -38,8 +38,8 @@ export class CocktailsService {
       catchError((error) => {
         console.log(error);
         return of(null);
-      }),
-      delay(1000)
+      })
+      // delay(1000)
     );
   }
 
@@ -71,8 +71,8 @@ export class CocktailsService {
     console.log(`Buscando por category: ${url}`);
     return this.http.get<CocktailResponse>(url).pipe(
       map((response) => response.drinks || []),
-      catchError(() => of([])),
-      delay(1000)
+      catchError(() => of([]))
+      // delay(1000)
     );
   }
 
@@ -92,8 +92,8 @@ export class CocktailsService {
       catchError((error) => {
         console.log(error);
         return of(null);
-      }),
-      delay(1000)
+      })
+      // delay(1000)
     );
   }
 }
